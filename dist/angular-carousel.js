@@ -24,7 +24,13 @@ angular.module('angular-carousel')
     restrict: 'A',
     link: function (scope, element, attrs) {
         var delay = Math.round(parseFloat(attrs.rnCarouselAutoSlide) * 1000),
-            timer = increment = false, slidesCount = element.children().length;
+            timer =  false, slidesCount = element.children().length;
+            notrepeat = true;
+
+            scope.$on('rnCarousel:CollectionUpdated', function($parentscope, newSlidesCount){
+                slidesCount = newSlidesCount;
+                notrepeat = false
+            });
 
         if(!scope.carouselExposedIndex){
             scope.carouselExposedIndex = 0;
@@ -282,6 +288,7 @@ angular.module('angular-carousel').run(['$templateCache', function($templateCach
                             } else if (angular.isObject(newValue)) {
                                 slidesCount = Object.keys(newValue).length;
                             }
+                            scope.$emit('rnCarousel:CollectionUpdated', slidesCount);
                             updateIndicatorArray();
                             if (!containerWidth) updateContainerWidth();
                             goToSlide(scope.carouselIndex);
